@@ -60,17 +60,35 @@ class Lab10ApplicationTests {
         // Hint: StepVerifier.create(repository.findAll())
         //         .expectNextCount(3)   ← มี 3 รายการ
         //         .verifyComplete()
+        StepVerifier.create(repository.findAll())
+                .expectNextCount(3)
+                .verifyComplete();
     }
 
     @Test
     void testSave() {
         // TODO: ทดสอบ save() บันทึกแล้วคืน Product
         // Hint: สร้าง Product ใหม่ → save → expectNext → verifyComplete
+        Product product = new Product("99", "Test Product", "Test",
+                "TestBrand", 1, 100.0, "NONE");
+
+        StepVerifier.create(repository.save(product))
+                .expectNextMatches(saved -> saved.getId().equals("99")
+                        && saved.getName().equals("Test Product"))
+                .verifyComplete();
+        // ลบทิ้งหลังทดสอบ เพื่อให้ testFindAll ยังได้ 3 รายการเสมอ
+        // (test ทุกตัวใช้ repository ตัวเดียวกัน และลำดับการรัน test ไม่แน่นอน)
+        StepVerifier.create(repository.deleteById("99"))
+                .verifyComplete();
+
     }
 
     @Test
     void testFindByCategory() {
         // TODO: ทดสอบ findByCategory("Electronics")
         // Hint: expectNextCount(3) เพราะมี 3 รายการใน Electronics
+        StepVerifier.create(repository.findByCategory("Electronics"))
+                .expectNextCount(3)
+                .verifyComplete();
     }
 }
